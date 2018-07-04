@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { TooltipConfig } from './tooltip.config';
 import { isBs3 } from '../utils/theme-provider';
-var TooltipContainerComponent = (function () {
+var TooltipContainerComponent = /** @class */ (function () {
     function TooltipContainerComponent(config) {
         Object.assign(this, config);
     }
@@ -35,7 +35,7 @@ var TooltipContainerComponent = (function () {
                         role: 'tooltip'
                     },
                     styles: [
-                        "\n    :host.tooltip {\n      display: block;\n    }\n    :host.bs-tooltip-top .arrow, :host.bs-tooltip-bottom .arrow {\n      left: calc(50% - 2.5px);\n    }\n    :host.bs-tooltip-left .arrow, :host.bs-tooltip-right .arrow {\n      top: calc(50% - 2.5px);\n    }\n  "
+                        "\n    :host.tooltip {\n      display: block;\n    }\n    :host.bs-tooltip-top .arrow, :host.bs-tooltip-bottom .arrow {\n      left: 50%;\n      margin-left: -6px;\n    }\n    :host.bs-tooltip-left .arrow, :host.bs-tooltip-right .arrow {\n      top: 50%;\n      margin-top: -6px;\n    }\n  "
                     ],
                     template: "\n    <div class=\"tooltip-arrow arrow\"></div>\n    <div class=\"tooltip-inner\"><ng-content></ng-content></div>\n    "
                 },] },

@@ -1,19 +1,18 @@
-// tslint:disable:max-file-line-count
 import { initialDatepickerState } from './bs-datepicker.state';
 import { BsDatepickerActions } from './bs-datepicker.actions';
 import { calcDaysCalendar } from '../engine/calc-days-calendar';
 import { formatDaysCalendar } from '../engine/format-days-calendar';
 import { flagDaysCalendar } from '../engine/flag-days-calendar';
-import { setDate, shiftDate } from '../../bs-moment/utils/date-setters';
+import { setFullDate, shiftDate } from '../../chronos/utils/date-setters';
 import { canSwitchMode } from '../engine/view-mode';
 import { formatMonthsCalendar } from '../engine/format-months-calendar';
 import { flagMonthsCalendar } from '../engine/flag-months-calendar';
 import { formatYearsCalendar, yearsPerCalendar } from '../engine/format-years-calendar';
 import { flagYearsCalendar } from '../engine/flag-years-calendar';
-import { isArray, isDateValid } from '../../bs-moment/utils/type-checks';
-import { startOf } from '../../bs-moment/utils/start-end-of';
-import { getLocale } from '../../bs-moment/locale/locales.service';
-import { isAfter, isBefore } from '../../bs-moment/utils/date-compare';
+import { isArray, isDateValid } from '../../chronos/utils/type-checks';
+import { startOf } from '../../chronos/utils/start-end-of';
+import { getLocale } from '../../chronos/locale/locales';
+import { isAfter, isBefore } from '../../chronos/utils/date-compare';
 export function bsDatepickerReducer(state, action) {
     if (state === void 0) { state = initialDatepickerState; }
     switch (action.type) {
@@ -38,7 +37,9 @@ export function bsDatepickerReducer(state, action) {
         }
         case BsDatepickerActions.NAVIGATE_TO: {
             var payload = action.payload;
-            var date = setDate(state.view.date, payload.unit);
+            var date = setFullDate(state.view.date, payload.unit);
+            // const mode = payload.viewMode;
+            // const newState = { view: { date, mode } };
             var newState = void 0;
             var mode = void 0;
             if (canSwitchMode(payload.viewMode, state.minMode)) {

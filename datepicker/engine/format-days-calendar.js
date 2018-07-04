@@ -1,5 +1,5 @@
-import { formatDate } from '../../bs-moment/format';
-import { getLocale } from '../../bs-moment/locale/locales.service';
+import { formatDate } from '../../chronos/format';
+import { getLocale } from '../../chronos/locale/locales';
 export function formatDaysCalendar(daysCalendar, formatOptions, monthIndex) {
     return {
         month: daysCalendar.month,
@@ -7,15 +7,19 @@ export function formatDaysCalendar(daysCalendar, formatOptions, monthIndex) {
         yearTitle: formatDate(daysCalendar.month, formatOptions.yearTitle, formatOptions.locale),
         weekNumbers: getWeekNumbers(daysCalendar.daysMatrix, formatOptions.weekNumbers, formatOptions.locale),
         weekdays: getShiftedWeekdays(formatOptions.locale),
-        weeks: daysCalendar.daysMatrix.map(function (week, weekIndex) { return ({
-            days: week.map(function (date, dayIndex) { return ({
-                date: date,
-                label: formatDate(date, formatOptions.dayLabel, formatOptions.locale),
-                monthIndex: monthIndex,
-                weekIndex: weekIndex,
-                dayIndex: dayIndex
-            }); })
-        }); })
+        weeks: daysCalendar.daysMatrix.map(function (week, weekIndex) {
+            return ({
+                days: week.map(function (date, dayIndex) {
+                    return ({
+                        date: date,
+                        label: formatDate(date, formatOptions.dayLabel, formatOptions.locale),
+                        monthIndex: monthIndex,
+                        weekIndex: weekIndex,
+                        dayIndex: dayIndex
+                    });
+                })
+            });
+        })
     };
 }
 export function getWeekNumbers(daysMatrix, format, locale) {

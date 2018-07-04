@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { BarComponent } from './bar.component';
-import { ProgressDirective } from './progress.directive';
 import { ProgressbarComponent } from './progressbar.component';
 import { ProgressbarConfig } from './progressbar.config';
-var ProgressbarModule = (function () {
+var ProgressbarModule = /** @class */ (function () {
     function ProgressbarModule() {
     }
     ProgressbarModule.forRoot = function () {
@@ -13,12 +12,10 @@ var ProgressbarModule = (function () {
     ProgressbarModule.decorators = [
         { type: NgModule, args: [{
                     imports: [CommonModule],
-                    declarations: [ProgressDirective, BarComponent, ProgressbarComponent],
-                    exports: [ProgressDirective, BarComponent, ProgressbarComponent]
+                    declarations: [BarComponent, ProgressbarComponent],
+                    exports: [BarComponent, ProgressbarComponent]
                 },] },
     ];
-    /** @nocollapse */
-    ProgressbarModule.ctorParameters = function () { return []; };
     return ProgressbarModule;
 }());
 export { ProgressbarModule };

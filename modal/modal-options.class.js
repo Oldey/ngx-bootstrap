@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-var ModalOptions = (function () {
+var ModalOptions = /** @class */ (function () {
     function ModalOptions() {
     }
     ModalOptions.decorators = [
         { type: Injectable },
     ];
-    /** @nocollapse */
-    ModalOptions.ctorParameters = function () { return []; };
     return ModalOptions;
 }());
 export { ModalOptions };
@@ -17,7 +15,8 @@ export var modalConfigDefaults = {
     show: false,
     ignoreBackdropClick: false,
     class: '',
-    animated: true
+    animated: true,
+    initialState: {}
 };
 export var CLASS_NAME = {
     SCROLLBAR_MEASURER: 'modal-scrollbar-measure',
@@ -25,6 +24,7 @@ export var CLASS_NAME = {
     OPEN: 'modal-open',
     FADE: 'fade',
     IN: 'in',
+    // bs3
     SHOW: 'show' // bs4
 };
 export var SELECTOR = {

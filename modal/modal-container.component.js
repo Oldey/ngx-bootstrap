@@ -1,11 +1,9 @@
 import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
 import { CLASS_NAME, DISMISS_REASONS, ModalOptions, TRANSITION_DURATIONS } from './modal-options.class';
-import { BsModalService } from './bs-modal.service';
 import { isBs3 } from '../utils/theme-provider';
-var ModalContainerComponent = (function () {
-    function ModalContainerComponent(options, _element, bsModalService, _renderer) {
+var ModalContainerComponent = /** @class */ (function () {
+    function ModalContainerComponent(options, _element, _renderer) {
         this._element = _element;
-        this.bsModalService = bsModalService;
         this._renderer = _renderer;
         this.isShown = false;
         this.isModalHiding = false;
@@ -28,6 +26,9 @@ var ModalContainerComponent = (function () {
             }
             this._renderer.addClass(document.body, CLASS_NAME.OPEN);
         }
+        if (this._element.nativeElement) {
+            this._element.nativeElement.focus();
+        }
     };
     ModalContainerComponent.prototype.onClick = function (event) {
         if (this.config.ignoreBackdropClick ||
@@ -38,7 +39,13 @@ var ModalContainerComponent = (function () {
         this.bsModalService.setDismissReason(DISMISS_REASONS.BACKRDOP);
         this.hide();
     };
-    ModalContainerComponent.prototype.onEsc = function () {
+    ModalContainerComponent.prototype.onEsc = function (event) {
+        if (!this.isShown) {
+            return;
+        }
+        if (event.keyCode === 27) {
+            event.preventDefault();
+        }
         if (this.config.keyboard &&
             this.level === this.bsModalService.getModalsCount()) {
             this.bsModalService.setDismissReason(DISMISS_REASONS.ESC);
@@ -75,7 +82,8 @@ var ModalContainerComponent = (function () {
                     host: {
                         class: 'modal',
                         role: 'dialog',
-                        tabindex: '-1'
+                        tabindex: '-1',
+                        '[attr.aria-modal]': 'true'
                     }
                 },] },
     ];
@@ -83,12 +91,11 @@ var ModalContainerComponent = (function () {
     ModalContainerComponent.ctorParameters = function () { return [
         { type: ModalOptions, },
         { type: ElementRef, },
-        { type: BsModalService, },
         { type: Renderer2, },
     ]; };
     ModalContainerComponent.propDecorators = {
-        'onClick': [{ type: HostListener, args: ['click', ['$event'],] },],
-        'onEsc': [{ type: HostListener, args: ['window:keydown.esc',] },],
+        "onClick": [{ type: HostListener, args: ['click', ['$event'],] },],
+        "onEsc": [{ type: HostListener, args: ['window:keydown.esc', ['$event'],] },],
     };
     return ModalContainerComponent;
 }());

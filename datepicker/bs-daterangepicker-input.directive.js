@@ -1,7 +1,10 @@
 import { ChangeDetectorRef, Directive, ElementRef, forwardRef, Host, Renderer2 } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { formatDate } from '../bs-moment/format';
-import { getLocale } from '../bs-moment/locale/locales.service';
+import { NG_VALIDATORS, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { parseDate } from '../chronos/create/local';
+import { formatDate } from '../chronos/format';
+import { getLocale } from '../chronos/locale/locales';
+import { isAfter, isBefore } from '../chronos/utils/date-compare';
+import { isArray, isDateValid } from '../chronos/utils/type-checks';
 import { BsDaterangepickerDirective } from './bs-daterangepicker.component';
 import { BsLocaleService } from './bs-locale.service';
 var BS_DATERANGEPICKER_VALUE_ACCESSOR = {
@@ -10,7 +13,12 @@ var BS_DATERANGEPICKER_VALUE_ACCESSOR = {
     useExisting: forwardRef(function () { return BsDaterangepickerInputDirective; }),
     multi: true
 };
-var BsDaterangepickerInputDirective = (function () {
+var BS_DATERANGEPICKER_VALIDATOR = {
+    provide: NG_VALIDATORS,
+    useExisting: forwardRef(function () { return BsDaterangepickerInputDirective; }),
+    multi: true
+};
+var BsDaterangepickerInputDirective = /** @class */ (function () {
     function BsDaterangepickerInputDirective(_picker, _localeService, _renderer, _elRef, changeDetection) {
         var _this = this;
         this._picker = _picker;
@@ -20,6 +28,7 @@ var BsDaterangepickerInputDirective = (function () {
         this.changeDetection = changeDetection;
         this._onChange = Function.prototype;
         this._onTouched = Function.prototype;
+        this._validatorChange = Function.prototype;
         // update input value on datepicker value update
         this._picker.bsValueChange.subscribe(function (value) {
             _this._setInputValue(value);
@@ -38,8 +47,10 @@ var BsDaterangepickerInputDirective = (function () {
     BsDaterangepickerInputDirective.prototype._setInputValue = function (date) {
         var range = '';
         if (date) {
-            var start = formatDate(date[0], this._picker._config.rangeInputFormat, this._localeService.currentLocale) || '';
-            var end = formatDate(date[1], this._picker._config.rangeInputFormat, this._localeService.currentLocale) || '';
+            var start = !date[0] ? ''
+                : formatDate(date[0], this._picker._config.rangeInputFormat, this._localeService.currentLocale);
+            var end = !date[1] ? ''
+                : formatDate(date[1], this._picker._config.rangeInputFormat, this._localeService.currentLocale);
             range = (start && end) ? start + this._picker._config.rangeSeparator + end : '';
         }
         this._renderer.setProperty(this._elRef.nativeElement, 'value', range);
@@ -49,23 +60,48 @@ var BsDaterangepickerInputDirective = (function () {
         this._onChange(this._value);
         this._onTouched();
     };
+    BsDaterangepickerInputDirective.prototype.validate = function (c) {
+        var _value = c.value;
+        if (_value === null || _value === undefined || !isArray(_value)) {
+            return null;
+        }
+        var _isDateValid = isDateValid(_value[0]) && isDateValid(_value[0]);
+        if (!_isDateValid) {
+            return { bsDate: { invalid: _value } };
+        }
+        if (this._picker && this._picker.minDate && isBefore(_value[0], this._picker.minDate, 'date')) {
+            return { bsDate: { minDate: this._picker.minDate } };
+        }
+        if (this._picker && this._picker.maxDate && isAfter(_value[1], this._picker.maxDate, 'date')) {
+            return { bsDate: { maxDate: this._picker.maxDate } };
+        }
+    };
+    BsDaterangepickerInputDirective.prototype.registerOnValidatorChange = function (fn) {
+        this._validatorChange = fn;
+    };
     BsDaterangepickerInputDirective.prototype.writeValue = function (value) {
+        var _this = this;
         if (!value) {
             this._value = null;
         }
-        var _localeKey = this._localeService.currentLocale;
-        var _locale = getLocale(_localeKey);
-        if (!_locale) {
-            throw new Error("Locale \"" + _localeKey + "\" is not defined, please add it with \"defineLocale(...)\"");
-        }
-        if (typeof value === 'string') {
-            this._value = value
-                .split(this._picker._config.rangeSeparator)
-                .map(function (date) { return new Date(_locale.preparse(date)); })
+        else {
+            var _localeKey = this._localeService.currentLocale;
+            var _locale = getLocale(_localeKey);
+            if (!_locale) {
+                throw new Error("Locale \"" + _localeKey + "\" is not defined, please add it with \"defineLocale(...)\"");
+            }
+            var _input = [];
+            if (typeof value === 'string') {
+                _input = value.split(this._picker._config.rangeSeparator);
+            }
+            if (Array.isArray(value)) {
+                _input = value;
+            }
+            this._value = _input
+                .map(function (_val) {
+                return parseDate(_val, _this._picker._config.dateInputFormat, _this._localeService.currentLocale);
+            })
                 .map(function (date) { return (isNaN(date.valueOf()) ? null : date); });
-        }
-        if (Array.isArray(value)) {
-            this._value = value;
         }
         this._picker.bsValue = this._value;
     };
@@ -97,7 +133,7 @@ var BsDaterangepickerInputDirective = (function () {
                         '(keyup.esc)': 'hide()',
                         '(blur)': 'onBlur()'
                     },
-                    providers: [BS_DATERANGEPICKER_VALUE_ACCESSOR]
+                    providers: [BS_DATERANGEPICKER_VALUE_ACCESSOR, BS_DATERANGEPICKER_VALIDATOR]
                 },] },
     ];
     /** @nocollapse */

@@ -1,4 +1,4 @@
-import { TimeUnit } from '../../bs-moment/types';
+import { TimeUnit } from '../../chronos/types';
 import { Action } from '../../mini-ngrx/index';
 import { BsDatepickerViewMode, BsViewNavigationEvent, CellHoverEvent, DatepickerRenderOptions } from '../models/index';
 export declare class BsDatepickerActions {

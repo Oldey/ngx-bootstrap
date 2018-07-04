@@ -1,7 +1,6 @@
 import { ElementRef, EventEmitter, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { ComponentLoaderFactory } from '../component-loader/component-loader.factory';
-import { Subscription } from 'rxjs/Subscription';
-import 'rxjs/add/operator/filter';
+import { Subscription } from 'rxjs';
 import { BsDatepickerConfig } from './bs-datepicker.config';
 import { BsDatepickerViewMode } from './models/index';
 export declare class BsDatepickerDirective implements OnInit, OnDestroy, OnChanges {
@@ -46,7 +45,7 @@ export declare class BsDatepickerDirective implements OnInit, OnDestroy, OnChang
      */
     bsConfig: Partial<BsDatepickerConfig>;
     /**
-     * Indicates whether datepicker is enabled or not
+     * Indicates whether datepicker's content is enabled or not
      */
     isDisabled: boolean;
     /**
@@ -58,7 +57,7 @@ export declare class BsDatepickerDirective implements OnInit, OnDestroy, OnChang
      */
     maxDate: Date;
     /**
-     * Minimum view mode : day, month, or year
+     * Minimum view mode: day, month, or year
      */
     minMode: BsDatepickerViewMode;
     /**

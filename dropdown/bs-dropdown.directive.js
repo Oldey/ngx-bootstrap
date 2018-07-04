@@ -1,12 +1,11 @@
-// tslint:disable:max-file-line-count
-import { Directive, ElementRef, Input, Output, Renderer2, ViewContainerRef } from '@angular/core';
-import 'rxjs/add/operator/filter';
-import { ComponentLoaderFactory } from '../component-loader';
+import { Directive, ElementRef, EventEmitter, Input, Output, Renderer2, ViewContainerRef } from '@angular/core';
+import { filter } from 'rxjs/operators';
+import { ComponentLoaderFactory } from '../component-loader/index';
 import { BsDropdownConfig } from './bs-dropdown.config';
 import { BsDropdownContainerComponent } from './bs-dropdown-container.component';
 import { BsDropdownState } from './bs-dropdown.state';
 import { isBs3 } from '../utils/theme-provider';
-var BsDropdownDirective = (function () {
+var BsDropdownDirective = /** @class */ (function () {
     function BsDropdownDirective(_elementRef, _renderer, _viewContainerRef, _cis, _config, _state) {
         this._elementRef = _elementRef;
         this._renderer = _renderer;
@@ -32,11 +31,11 @@ var BsDropdownDirective = (function () {
         get: function () {
             return this._state.autoClose;
         },
-        /**
-         * Indicates that dropdown will be closed on item or document click,
-         * and after pressing ESC
-         */
-        set: function (value) {
+        set: /**
+           * Indicates that dropdown will be closed on item or document click,
+           * and after pressing ESC
+           */
+        function (value) {
             this._state.autoClose = value;
         },
         enumerable: true,
@@ -46,10 +45,10 @@ var BsDropdownDirective = (function () {
         get: function () {
             return this._isDisabled;
         },
-        /**
-         * Disables dropdown toggle and hides dropdown menu if opened
-         */
-        set: function (value) {
+        set: /**
+           * Disables dropdown toggle and hides dropdown menu if opened
+           */
+        function (value) {
             this._isDisabled = value;
             this._state.isDisabledChange.emit(value);
             if (value) {
@@ -60,10 +59,10 @@ var BsDropdownDirective = (function () {
         configurable: true
     });
     Object.defineProperty(BsDropdownDirective.prototype, "isOpen", {
-        /**
-         * Returns whether or not the popover is currently being shown
-         */
-        get: function () {
+        get: /**
+           * Returns whether or not the popover is currently being shown
+           */
+        function () {
             if (this._showInline) {
                 return this._isInlineOpen;
             }
@@ -114,14 +113,22 @@ var BsDropdownDirective = (function () {
         this._subscriptions.push(this._state.toggleClick.subscribe(function (value) { return _this.toggle(value); }));
         // hide dropdown if set disabled while opened
         this._subscriptions.push(this._state.isDisabledChange
-            .filter(function (value) { return value; })
+            .pipe(filter(function (value) { return value; }))
             .subscribe(function (value) { return _this.hide(); }));
     };
     /**
      * Opens an element’s popover. This is considered a “manual” triggering of
      * the popover.
      */
-    BsDropdownDirective.prototype.show = function () {
+    /**
+       * Opens an element’s popover. This is considered a “manual” triggering of
+       * the popover.
+       */
+    BsDropdownDirective.prototype.show = /**
+       * Opens an element’s popover. This is considered a “manual” triggering of
+       * the popover.
+       */
+    function () {
         var _this = this;
         if (this.isOpen || this.isDisabled) {
             return;
@@ -148,6 +155,7 @@ var BsDropdownDirective = (function () {
             _this._state.direction = _dropup ? 'up' : 'down';
             var _placement = _this.placement || (_dropup ? 'top left' : 'bottom left');
             // show dropdown
+            // show dropdown
             _this._dropdown
                 .attach(BsDropdownContainerComponent)
                 .to(_this.container)
@@ -164,12 +172,21 @@ var BsDropdownDirective = (function () {
      * Closes an element’s popover. This is considered a “manual” triggering of
      * the popover.
      */
-    BsDropdownDirective.prototype.hide = function () {
+    /**
+       * Closes an element’s popover. This is considered a “manual” triggering of
+       * the popover.
+       */
+    BsDropdownDirective.prototype.hide = /**
+       * Closes an element’s popover. This is considered a “manual” triggering of
+       * the popover.
+       */
+    function () {
         if (!this.isOpen) {
             return;
         }
         if (this._showInline) {
             this.removeShowClass();
+            this.removeDropupStyles();
             this._isInlineOpen = false;
             this.onHidden.emit(true);
         }
@@ -180,9 +197,20 @@ var BsDropdownDirective = (function () {
     };
     /**
      * Toggles an element’s popover. This is considered a “manual” triggering of
-     * the popover.
+     * the popover. With parameter <code>true</code> allows toggling, with parameter <code>false</code>
+     * only hides opened dropdown. Parameter usage will be removed in ngx-bootstrap v3
      */
-    BsDropdownDirective.prototype.toggle = function (value) {
+    /**
+       * Toggles an element’s popover. This is considered a “manual” triggering of
+       * the popover. With parameter <code>true</code> allows toggling, with parameter <code>false</code>
+       * only hides opened dropdown. Parameter usage will be removed in ngx-bootstrap v3
+       */
+    BsDropdownDirective.prototype.toggle = /**
+       * Toggles an element’s popover. This is considered a “manual” triggering of
+       * the popover. With parameter <code>true</code> allows toggling, with parameter <code>false</code>
+       * only hides opened dropdown. Parameter usage will be removed in ngx-bootstrap v3
+       */
+    function (value) {
         if (this.isOpen || !value) {
             return this.hide();
         }
@@ -200,7 +228,7 @@ var BsDropdownDirective = (function () {
         if (!isBs3()) {
             this.addShowClass();
             this.checkRightAlignment();
-            this.checkDropup();
+            this.addDropupStyles();
         }
     };
     BsDropdownDirective.prototype.addShowClass = function () {
@@ -220,11 +248,17 @@ var BsDropdownDirective = (function () {
             this._renderer.setStyle(this._inlinedMenu.rootNodes[0], 'right', isRightAligned ? '0' : 'auto');
         }
     };
-    BsDropdownDirective.prototype.checkDropup = function () {
+    BsDropdownDirective.prototype.addDropupStyles = function () {
         if (this._inlinedMenu && this._inlinedMenu.rootNodes[0]) {
             // a little hack to not break support of bootstrap 4 beta
             this._renderer.setStyle(this._inlinedMenu.rootNodes[0], 'top', this.dropup ? 'auto' : '100%');
             this._renderer.setStyle(this._inlinedMenu.rootNodes[0], 'transform', this.dropup ? 'translateY(-101%)' : 'translateY(0)');
+        }
+    };
+    BsDropdownDirective.prototype.removeDropupStyles = function () {
+        if (this._inlinedMenu && this._inlinedMenu.rootNodes[0]) {
+            this._renderer.removeStyle(this._inlinedMenu.rootNodes[0], 'top');
+            this._renderer.removeStyle(this._inlinedMenu.rootNodes[0], 'transform');
         }
     };
     BsDropdownDirective.decorators = [
@@ -249,16 +283,16 @@ var BsDropdownDirective = (function () {
         { type: BsDropdownState, },
     ]; };
     BsDropdownDirective.propDecorators = {
-        'placement': [{ type: Input },],
-        'triggers': [{ type: Input },],
-        'container': [{ type: Input },],
-        'dropup': [{ type: Input },],
-        'autoClose': [{ type: Input },],
-        'isDisabled': [{ type: Input },],
-        'isOpen': [{ type: Input },],
-        'isOpenChange': [{ type: Output },],
-        'onShown': [{ type: Output },],
-        'onHidden': [{ type: Output },],
+        "placement": [{ type: Input },],
+        "triggers": [{ type: Input },],
+        "container": [{ type: Input },],
+        "dropup": [{ type: Input },],
+        "autoClose": [{ type: Input },],
+        "isDisabled": [{ type: Input },],
+        "isOpen": [{ type: Input },],
+        "isOpenChange": [{ type: Output },],
+        "onShown": [{ type: Output },],
+        "onHidden": [{ type: Output },],
     };
     return BsDropdownDirective;
 }());

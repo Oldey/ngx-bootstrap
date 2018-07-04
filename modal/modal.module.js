@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { ModalBackdropComponent } from './modal-backdrop.component';
 import { ModalDirective } from './modal.directive';
-import { PositioningService } from '../positioning';
-import { ComponentLoaderFactory } from '../component-loader';
+import { PositioningService } from '../positioning/index';
+import { ComponentLoaderFactory } from '../component-loader/index';
 import { ModalContainerComponent } from './modal-container.component';
 import { BsModalService } from './bs-modal.service';
-var ModalModule = (function () {
+var ModalModule = /** @class */ (function () {
     function ModalModule() {
     }
     ModalModule.forRoot = function () {
@@ -25,8 +25,6 @@ var ModalModule = (function () {
                     entryComponents: [ModalBackdropComponent, ModalContainerComponent]
                 },] },
     ];
-    /** @nocollapse */
-    ModalModule.ctorParameters = function () { return []; };
     return ModalModule;
 }());
 export { ModalModule };

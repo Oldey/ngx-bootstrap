@@ -1,5 +1,5 @@
-import { formatDate } from '../bs-moment/format';
-var DateFormatter = (function () {
+import { formatDate } from '../chronos/format';
+var DateFormatter = /** @class */ (function () {
     function DateFormatter() {
     }
     DateFormatter.prototype.format = function (date, format, locale) {

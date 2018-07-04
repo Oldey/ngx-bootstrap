@@ -1,16 +1,16 @@
 import { Component, Host, HostBinding, Input } from '@angular/core';
-import { ProgressDirective } from './progress.directive';
+import { ProgressbarComponent } from './progressbar.component';
 import { isBs3 } from '../utils/theme-provider';
 // todo: number pipe
 // todo: use query from progress?
-var BarComponent = (function () {
+var BarComponent = /** @class */ (function () {
     function BarComponent(progress) {
         this.percent = 0;
         this.progress = progress;
     }
     Object.defineProperty(BarComponent.prototype, "value", {
-        /** current value of progress bar */
-        get: function () {
+        get: /** current value of progress bar */
+        function () {
             return this._value;
         },
         set: function (v) {
@@ -26,7 +26,7 @@ var BarComponent = (function () {
     Object.defineProperty(BarComponent.prototype, "setBarWidth", {
         get: function () {
             this.recalculatePercentage();
-            return this.isBs3 ? '' : this.percent;
+            return this.percent;
         },
         enumerable: true,
         configurable: true
@@ -57,17 +57,29 @@ var BarComponent = (function () {
     BarComponent.decorators = [
         { type: Component, args: [{
                     selector: 'bar',
-                    template: "<div class=\"progress-bar\" style=\"min-width: 0;\" role=\"progressbar\" [ngClass]=\"type && 'progress-bar-' + type + ' bg-' + type\" [ngStyle]=\"{width: (isBs3 ? (percent < 100 ? percent : 100) + '%' : '100%'), transition: transition}\" aria-valuemin=\"0\" [attr.aria-valuenow]=\"value\" [attr.aria-valuetext]=\"percent.toFixed(0) + '%'\" [attr.aria-valuemax]=\"max\"> <ng-content></ng-content> </div> "
+                    template: "<ng-content></ng-content> ",
+                    host: {
+                        role: 'progressbar',
+                        'aria-valuemin': '0',
+                        '[class]': '"progress-bar " + (type ? "progress-bar-" + type + " bg-" + type : "")',
+                        '[class.progress-bar-animated]': '!isBs3 && animate',
+                        '[class.progress-bar-striped]': 'striped',
+                        '[class.active]': 'isBs3 && animate',
+                        '[attr.aria-valuenow]': 'value',
+                        '[attr.aria-valuetext]': 'percent ? percent.toFixed(0) + "%" : ""',
+                        '[attr.aria-valuemax]': 'max',
+                        '[style.height.%]': '"100"'
+                    }
                 },] },
     ];
     /** @nocollapse */
     BarComponent.ctorParameters = function () { return [
-        { type: ProgressDirective, decorators: [{ type: Host },] },
+        { type: ProgressbarComponent, decorators: [{ type: Host },] },
     ]; };
     BarComponent.propDecorators = {
-        'type': [{ type: Input },],
-        'value': [{ type: Input },],
-        'setBarWidth': [{ type: HostBinding, args: ['style.width.%',] },],
+        "type": [{ type: Input },],
+        "value": [{ type: Input },],
+        "setBarWidth": [{ type: HostBinding, args: ['style.width.%',] },],
     };
     return BarComponent;
 }());

@@ -7,41 +7,42 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-// tslint:disable:deprecation
 import { Directive, ElementRef, EventEmitter, Input, Output, Renderer2, ViewContainerRef } from '@angular/core';
 import { TooltipContainerComponent } from './tooltip-container.component';
 import { TooltipConfig } from './tooltip.config';
-import { ComponentLoaderFactory } from '../component-loader';
+import { ComponentLoaderFactory } from '../component-loader/index';
 import { OnChange } from '../utils/decorators';
 import { warnOnce } from '../utils/warn-once';
-var TooltipDirective = (function () {
+import { parseTriggers } from '../utils/triggers';
+import { timer } from 'rxjs';
+var TooltipDirective = /** @class */ (function () {
     function TooltipDirective(_viewContainerRef, _renderer, _elementRef, cis, config) {
+        this._renderer = _renderer;
+        this._elementRef = _elementRef;
         /** Fired when tooltip content changes */
         this.tooltipChange = new EventEmitter();
         /**
-         * Css class for tooltip container
-         */
+           * Css class for tooltip container
+           */
         this.containerClass = '';
         /** @deprecated - removed, will be added to configuration */
         this._animation = true;
-        /** @deprecated */
-        this._delay = 0;
         /** @deprecated */
         this._fadeDuration = 150;
         /** @deprecated */
         this.tooltipStateChanged = new EventEmitter();
         this._tooltip = cis
-            .createLoader(_elementRef, _viewContainerRef, _renderer)
+            .createLoader(this._elementRef, _viewContainerRef, this._renderer)
             .provide({ provide: TooltipConfig, useValue: config });
         Object.assign(this, config);
         this.onShown = this._tooltip.onShown;
         this.onHidden = this._tooltip.onHidden;
     }
     Object.defineProperty(TooltipDirective.prototype, "isOpen", {
-        /**
-         * Returns whether or not the tooltip is currently being shown
-         */
-        get: function () {
+        get: /**
+           * Returns whether or not the tooltip is currently being shown
+           */
+        function () {
             return this._tooltip.isShown;
         },
         set: function (value) {
@@ -56,8 +57,8 @@ var TooltipDirective = (function () {
         configurable: true
     });
     Object.defineProperty(TooltipDirective.prototype, "htmlContent", {
-        /** @deprecated - please use `tooltip` instead */
-        set: function (value) {
+        set: /** @deprecated - please use `tooltip` instead */
+        function (value) {
             warnOnce('tooltipHtml was deprecated, please use `tooltip` instead');
             this.tooltip = value;
         },
@@ -65,8 +66,8 @@ var TooltipDirective = (function () {
         configurable: true
     });
     Object.defineProperty(TooltipDirective.prototype, "_placement", {
-        /** @deprecated - please use `placement` instead */
-        set: function (value) {
+        set: /** @deprecated - please use `placement` instead */
+        function (value) {
             warnOnce('tooltipPlacement was deprecated, please use `placement` instead');
             this.placement = value;
         },
@@ -78,8 +79,8 @@ var TooltipDirective = (function () {
             warnOnce('tooltipIsOpen was deprecated, please use `isOpen` instead');
             return this.isOpen;
         },
-        /** @deprecated - please use `isOpen` instead*/
-        set: function (value) {
+        set: /** @deprecated - please use `isOpen` instead*/
+        function (value) {
             warnOnce('tooltipIsOpen was deprecated, please use `isOpen` instead');
             this.isOpen = value;
         },
@@ -91,8 +92,8 @@ var TooltipDirective = (function () {
             warnOnce('tooltipEnable was deprecated, please use `isDisabled` instead');
             return this.isDisabled;
         },
-        /** @deprecated - please use `isDisabled` instead */
-        set: function (value) {
+        set: /** @deprecated - please use `isDisabled` instead */
+        function (value) {
             warnOnce('tooltipEnable was deprecated, please use `isDisabled` instead');
             this.isDisabled = value;
         },
@@ -104,8 +105,8 @@ var TooltipDirective = (function () {
             warnOnce('tooltipAppendToBody was deprecated, please use `container="body"` instead');
             return this.container === 'body';
         },
-        /** @deprecated - please use `container="body"` instead */
-        set: function (value) {
+        set: /** @deprecated - please use `container="body"` instead */
+        function (value) {
             warnOnce('tooltipAppendToBody was deprecated, please use `container="body"` instead');
             this.container = value ? 'body' : this.container;
         },
@@ -113,24 +114,33 @@ var TooltipDirective = (function () {
         configurable: true
     });
     Object.defineProperty(TooltipDirective.prototype, "_popupClass", {
-        /** @deprecated - will replaced with customClass */
-        set: function (value) {
+        set: /** @deprecated - will replaced with customClass */
+        function (value) {
             warnOnce('tooltipClass deprecated');
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(TooltipDirective.prototype, "_tooltipContext", {
-        /** @deprecated - removed */
-        set: function (value) {
+        set: /** @deprecated - removed */
+        function (value) {
             warnOnce('tooltipContext deprecated');
         },
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(TooltipDirective.prototype, "_tooltipPopupDelay", {
+        set: /** @deprecated */
+        function (value) {
+            warnOnce('tooltipPopupDelay is deprecated, use `delay` instead');
+            this.delay = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TooltipDirective.prototype, "_tooltipTrigger", {
-        /** @deprecated -  please use `triggers` instead */
-        get: function () {
+        get: /** @deprecated -  please use `triggers` instead */
+        function () {
             warnOnce('tooltipTrigger was deprecated, please use `triggers` instead');
             return this.triggers;
         },
@@ -157,7 +167,15 @@ var TooltipDirective = (function () {
      * Toggles an element’s tooltip. This is considered a “manual” triggering of
      * the tooltip.
      */
-    TooltipDirective.prototype.toggle = function () {
+    /**
+       * Toggles an element’s tooltip. This is considered a “manual” triggering of
+       * the tooltip.
+       */
+    TooltipDirective.prototype.toggle = /**
+       * Toggles an element’s tooltip. This is considered a “manual” triggering of
+       * the tooltip.
+       */
+    function () {
         if (this.isOpen) {
             return this.hide();
         }
@@ -167,7 +185,15 @@ var TooltipDirective = (function () {
      * Opens an element’s tooltip. This is considered a “manual” triggering of
      * the tooltip.
      */
-    TooltipDirective.prototype.show = function () {
+    /**
+       * Opens an element’s tooltip. This is considered a “manual” triggering of
+       * the tooltip.
+       */
+    TooltipDirective.prototype.show = /**
+       * Opens an element’s tooltip. This is considered a “manual” triggering of
+       * the tooltip.
+       */
+    function () {
         var _this = this;
         if (this.isOpen ||
             this.isDisabled ||
@@ -189,10 +215,23 @@ var TooltipDirective = (function () {
                 containerClass: _this.containerClass
             });
         };
-        if (this._delay) {
-            this._delayTimeoutId = setTimeout(function () {
+        var cancelDelayedTooltipShowing = function () {
+            if (_this._tooltipCancelShowFn) {
+                _this._tooltipCancelShowFn();
+            }
+        };
+        if (this.delay) {
+            var _timer_1 = timer(this.delay).subscribe(function () {
                 showTooltip();
-            }, this._delay);
+                cancelDelayedTooltipShowing();
+            });
+            if (this.triggers) {
+                var triggers = parseTriggers(this.triggers);
+                this._tooltipCancelShowFn = this._renderer.listen(this._elementRef.nativeElement, triggers[0].close, function () {
+                    _timer_1.unsubscribe();
+                    cancelDelayedTooltipShowing();
+                });
+            }
         }
         else {
             showTooltip();
@@ -202,7 +241,15 @@ var TooltipDirective = (function () {
      * Closes an element’s tooltip. This is considered a “manual” triggering of
      * the tooltip.
      */
-    TooltipDirective.prototype.hide = function () {
+    /**
+       * Closes an element’s tooltip. This is considered a “manual” triggering of
+       * the tooltip.
+       */
+    TooltipDirective.prototype.hide = /**
+       * Closes an element’s tooltip. This is considered a “manual” triggering of
+       * the tooltip.
+       */
+    function () {
         var _this = this;
         if (this._delayTimeoutId) {
             clearTimeout(this._delayTimeoutId);
@@ -234,28 +281,29 @@ var TooltipDirective = (function () {
         { type: TooltipConfig, },
     ]; };
     TooltipDirective.propDecorators = {
-        'tooltip': [{ type: Input },],
-        'tooltipChange': [{ type: Output },],
-        'placement': [{ type: Input },],
-        'triggers': [{ type: Input },],
-        'container': [{ type: Input },],
-        'isOpen': [{ type: Input },],
-        'isDisabled': [{ type: Input },],
-        'containerClass': [{ type: Input },],
-        'onShown': [{ type: Output },],
-        'onHidden': [{ type: Output },],
-        'htmlContent': [{ type: Input, args: ['tooltipHtml',] },],
-        '_placement': [{ type: Input, args: ['tooltipPlacement',] },],
-        '_isOpen': [{ type: Input, args: ['tooltipIsOpen',] },],
-        '_enable': [{ type: Input, args: ['tooltipEnable',] },],
-        '_appendToBody': [{ type: Input, args: ['tooltipAppendToBody',] },],
-        '_animation': [{ type: Input, args: ['tooltipAnimation',] },],
-        '_popupClass': [{ type: Input, args: ['tooltipClass',] },],
-        '_tooltipContext': [{ type: Input, args: ['tooltipContext',] },],
-        '_delay': [{ type: Input, args: ['tooltipPopupDelay',] },],
-        '_fadeDuration': [{ type: Input, args: ['tooltipFadeDuration',] },],
-        '_tooltipTrigger': [{ type: Input, args: ['tooltipTrigger',] },],
-        'tooltipStateChanged': [{ type: Output },],
+        "tooltip": [{ type: Input },],
+        "tooltipChange": [{ type: Output },],
+        "placement": [{ type: Input },],
+        "triggers": [{ type: Input },],
+        "container": [{ type: Input },],
+        "isOpen": [{ type: Input },],
+        "isDisabled": [{ type: Input },],
+        "containerClass": [{ type: Input },],
+        "delay": [{ type: Input },],
+        "onShown": [{ type: Output },],
+        "onHidden": [{ type: Output },],
+        "htmlContent": [{ type: Input, args: ['tooltipHtml',] },],
+        "_placement": [{ type: Input, args: ['tooltipPlacement',] },],
+        "_isOpen": [{ type: Input, args: ['tooltipIsOpen',] },],
+        "_enable": [{ type: Input, args: ['tooltipEnable',] },],
+        "_appendToBody": [{ type: Input, args: ['tooltipAppendToBody',] },],
+        "_animation": [{ type: Input, args: ['tooltipAnimation',] },],
+        "_popupClass": [{ type: Input, args: ['tooltipClass',] },],
+        "_tooltipContext": [{ type: Input, args: ['tooltipContext',] },],
+        "_tooltipPopupDelay": [{ type: Input, args: ['tooltipPopupDelay',] },],
+        "_fadeDuration": [{ type: Input, args: ['tooltipFadeDuration',] },],
+        "_tooltipTrigger": [{ type: Input, args: ['tooltipTrigger',] },],
+        "tooltipStateChanged": [{ type: Output },],
     };
     __decorate([
         OnChange(),

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 /** Provides default configuration values for timepicker */
-var TimepickerConfig = (function () {
+var TimepickerConfig = /** @class */ (function () {
     function TimepickerConfig() {
         /** hours change step */
         this.hourStep = 1;
@@ -14,6 +14,8 @@ var TimepickerConfig = (function () {
         this.meridians = ['AM', 'PM'];
         /** if true hours and minutes fields will be readonly */
         this.readonlyInput = false;
+        /** if true hours and minutes fields will be disabled */
+        this.disabled = false;
         /** if true scroll inside hours and minutes inputs will change time */
         this.mousewheel = true;
         /** if true up/down arrowkeys inside hours and minutes inputs will change time */
@@ -22,12 +24,12 @@ var TimepickerConfig = (function () {
         this.showSpinners = true;
         /** show seconds in timepicker */
         this.showSeconds = false;
+        /** show minutes in timepicker */
+        this.showMinutes = true;
     }
     TimepickerConfig.decorators = [
         { type: Injectable },
     ];
-    /** @nocollapse */
-    TimepickerConfig.ctorParameters = function () { return []; };
     return TimepickerConfig;
 }());
 export { TimepickerConfig };

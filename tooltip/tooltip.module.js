@@ -3,9 +3,9 @@ import { NgModule } from '@angular/core';
 import { TooltipContainerComponent } from './tooltip-container.component';
 import { TooltipDirective } from './tooltip.directive';
 import { TooltipConfig } from './tooltip.config';
-import { ComponentLoaderFactory } from '../component-loader';
-import { PositioningService } from '../positioning';
-var TooltipModule = (function () {
+import { ComponentLoaderFactory } from '../component-loader/index';
+import { PositioningService } from '../positioning/index';
+var TooltipModule = /** @class */ (function () {
     function TooltipModule() {
     }
     TooltipModule.forRoot = function () {
@@ -22,8 +22,6 @@ var TooltipModule = (function () {
                     entryComponents: [TooltipContainerComponent]
                 },] },
     ];
-    /** @nocollapse */
-    TooltipModule.ctorParameters = function () { return []; };
     return TooltipModule;
 }());
 export { TooltipModule };

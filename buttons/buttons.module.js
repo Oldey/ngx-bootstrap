@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { ButtonCheckboxDirective } from './button-checkbox.directive';
 import { ButtonRadioDirective } from './button-radio.directive';
-var ButtonsModule = (function () {
+import { ButtonRadioGroupDirective } from './button-radio-group.directive';
+var ButtonsModule = /** @class */ (function () {
     function ButtonsModule() {
     }
     ButtonsModule.forRoot = function () {
@@ -9,12 +10,10 @@ var ButtonsModule = (function () {
     };
     ButtonsModule.decorators = [
         { type: NgModule, args: [{
-                    declarations: [ButtonCheckboxDirective, ButtonRadioDirective],
-                    exports: [ButtonCheckboxDirective, ButtonRadioDirective]
+                    declarations: [ButtonCheckboxDirective, ButtonRadioDirective, ButtonRadioGroupDirective],
+                    exports: [ButtonCheckboxDirective, ButtonRadioDirective, ButtonRadioGroupDirective]
                 },] },
     ];
-    /** @nocollapse */
-    ButtonsModule.ctorParameters = function () { return []; };
     return ButtonsModule;
 }());
 export { ButtonsModule };

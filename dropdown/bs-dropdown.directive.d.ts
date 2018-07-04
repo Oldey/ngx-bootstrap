@@ -1,6 +1,5 @@
 import { ElementRef, EventEmitter, OnDestroy, OnInit, Renderer2, ViewContainerRef } from '@angular/core';
-import 'rxjs/add/operator/filter';
-import { ComponentLoaderFactory } from '../component-loader';
+import { ComponentLoaderFactory } from '../component-loader/index';
 import { BsDropdownConfig } from './bs-dropdown.config';
 import { BsDropdownState } from './bs-dropdown.state';
 export declare class BsDropdownDirective implements OnInit, OnDestroy {
@@ -75,7 +74,8 @@ export declare class BsDropdownDirective implements OnInit, OnDestroy {
     hide(): void;
     /**
      * Toggles an element’s popover. This is considered a “manual” triggering of
-     * the popover.
+     * the popover. With parameter <code>true</code> allows toggling, with parameter <code>false</code>
+     * only hides opened dropdown. Parameter usage will be removed in ngx-bootstrap v3
      */
     toggle(value?: boolean): void;
     ngOnDestroy(): void;
@@ -83,5 +83,6 @@ export declare class BsDropdownDirective implements OnInit, OnDestroy {
     private addShowClass();
     private removeShowClass();
     private checkRightAlignment();
-    private checkDropup();
+    private addDropupStyles();
+    private removeDropupStyles();
 }

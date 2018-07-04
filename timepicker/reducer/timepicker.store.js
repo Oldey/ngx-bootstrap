@@ -10,10 +10,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import { Injectable } from '@angular/core';
 import { timepickerReducer, initialState } from './timepicker.reducer';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { MiniStore } from '../../mini-ngrx/store.class';
-import { MiniState } from '../../mini-ngrx/state.class';
-var TimepickerStore = (function (_super) {
+import { BehaviorSubject } from 'rxjs';
+import { MiniStore, MiniState } from '../../mini-ngrx/index';
+var TimepickerStore = /** @class */ (function (_super) {
     __extends(TimepickerStore, _super);
     function TimepickerStore() {
         var _this = this;

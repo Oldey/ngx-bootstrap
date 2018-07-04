@@ -3,11 +3,11 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePickerInnerComponent } from './datepicker-inner.component';
 import { DatePickerComponent } from './datepicker.component';
+import { DatepickerConfig } from './datepicker.config';
 import { DayPickerComponent } from './daypicker.component';
 import { MonthPickerComponent } from './monthpicker.component';
 import { YearPickerComponent } from './yearpicker.component';
-import { DatepickerConfig } from './datepicker.config';
-var DatepickerModule = (function () {
+var DatepickerModule = /** @class */ (function () {
     function DatepickerModule() {
     }
     DatepickerModule.forRoot = function () {
@@ -33,8 +33,6 @@ var DatepickerModule = (function () {
                     entryComponents: [DatePickerComponent]
                 },] },
     ];
-    /** @nocollapse */
-    DatepickerModule.ctorParameters = function () { return []; };
     return DatepickerModule;
 }());
 export { DatepickerModule };

@@ -1,62 +1,55 @@
-/* tslint:disable:max-file-line-count */
-import { ChangeDetectorRef, Directive, ElementRef, EventEmitter, HostListener, Input, Output, Renderer2, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, EventEmitter, HostListener, Input, Output, Renderer2, TemplateRef, ViewContainerRef } from '@angular/core';
 import { NgControl } from '@angular/forms';
-import 'rxjs/add/observable/from';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/toArray';
-import { Observable } from 'rxjs/Observable';
-import { ComponentLoaderFactory } from '../component-loader';
+import { from, Observable } from 'rxjs';
+import { ComponentLoaderFactory } from '../component-loader/index';
 import { TypeaheadContainerComponent } from './typeahead-container.component';
 import { TypeaheadMatch } from './typeahead-match.class';
 import { getValueFromObject, latinize, tokenize } from './typeahead-utils';
-var TypeaheadDirective = (function () {
+import { debounceTime, filter, mergeMap, switchMap, toArray } from 'rxjs/operators';
+var TypeaheadDirective = /** @class */ (function () {
     function TypeaheadDirective(ngControl, element, viewContainerRef, renderer, cis, changeDetection) {
         this.ngControl = ngControl;
         this.element = element;
         this.renderer = renderer;
         this.changeDetection = changeDetection;
         /** minimal no of characters that needs to be entered before
-         * typeahead kicks-in. When set to 0, typeahead shows on focus with full
-         * list of options (limited as normal by typeaheadOptionsLimit)
-         */
+           * typeahead kicks-in. When set to 0, typeahead shows on focus with full
+           * list of options (limited as normal by typeaheadOptionsLimit)
+           */
         this.typeaheadMinLength = void 0;
         /** should be used only in case of typeahead attribute is array.
-         * If true - loading of options will be async, otherwise - sync.
-         * true make sense if options array is large.
-         */
+           * If true - loading of options will be async, otherwise - sync.
+           * true make sense if options array is large.
+           */
         this.typeaheadAsync = void 0;
         /** match latin symbols.
-         * If true the word súper would match super and vice versa.
-         */
+           * If true the word súper would match super and vice versa.
+           */
         this.typeaheadLatinize = true;
-        /** break words with spaces. If true the text "exact phrase"
-         * here match would match with match exact phrase here
-         * but not with phrase here exact match (kind of "google style").
-         */
+        /** Can be use to search words by inserting a single white space between each characters
+           *  for example 'C a l i f o r n i a' will match 'California'.
+           */
         this.typeaheadSingleWords = true;
         /** should be used only in case typeaheadSingleWords attribute is true.
-         * Sets the word delimiter to break words. Defaults to space.
-         */
+           * Sets the word delimiter to break words. Defaults to space.
+           */
         this.typeaheadWordDelimiters = ' ';
         /** should be used only in case typeaheadSingleWords attribute is true.
-         * Sets the word delimiter to match exact phrase.
-         * Defaults to simple and double quotes.
-         */
+           * Sets the word delimiter to match exact phrase.
+           * Defaults to simple and double quotes.
+           */
         this.typeaheadPhraseDelimiters = '\'"';
         /** specifies if typeahead is scrollable  */
         this.typeaheadScrollable = false;
         /** specifies number of options to show in scroll view  */
         this.typeaheadOptionsInScrollableView = 5;
         /** fired when 'busy' state of this component was changed,
-         * fired on async mode only, returns boolean
-         */
+           * fired on async mode only, returns boolean
+           */
         this.typeaheadLoading = new EventEmitter();
         /** fired on every key event and returns true
-         * in case of matches are not detected
-         */
+           * in case of matches are not detected
+           */
         this.typeaheadNoResults = new EventEmitter();
         /** fired when option was selected, return object with data of this option */
         this.typeaheadOnSelect = new EventEmitter();
@@ -128,7 +121,7 @@ var TypeaheadDirective = (function () {
                 return;
             }
             // enter, tab
-            if (e.keyCode === 13 || e.keyCode === 9) {
+            if (e.keyCode === 13) {
                 this._container.selectActiveMatch();
                 return;
             }
@@ -158,6 +151,7 @@ var TypeaheadDirective = (function () {
         // if an item is visible - don't change focus
         if (e.keyCode === 9) {
             e.preventDefault();
+            this._container.selectActiveMatch();
             return;
         }
     };
@@ -187,7 +181,10 @@ var TypeaheadDirective = (function () {
             animation: false,
             dropup: this.dropup
         });
-        this._outsideClickListener = this.renderer.listen('document', 'click', function () {
+        this._outsideClickListener = this.renderer.listen('document', 'click', function (e) {
+            if (_this.typeaheadMinLength === 0 && _this.element.nativeElement.contains(e.target)) {
+                return;
+            }
             _this.onOutsideClick();
         });
         this._container = this._typeahead.instance;
@@ -227,8 +224,7 @@ var TypeaheadDirective = (function () {
     TypeaheadDirective.prototype.asyncActions = function () {
         var _this = this;
         this._subscriptions.push(this.keyUpEventEmitter
-            .debounceTime(this.typeaheadWaitMs)
-            .mergeMap(function () { return _this.typeahead; })
+            .pipe(debounceTime(this.typeaheadWaitMs), switchMap(function () { return _this.typeahead; }))
             .subscribe(function (matches) {
             _this.finalizeAsyncCall(matches);
         }));
@@ -236,16 +232,14 @@ var TypeaheadDirective = (function () {
     TypeaheadDirective.prototype.syncActions = function () {
         var _this = this;
         this._subscriptions.push(this.keyUpEventEmitter
-            .debounceTime(this.typeaheadWaitMs)
-            .mergeMap(function (value) {
+            .pipe(debounceTime(this.typeaheadWaitMs), mergeMap(function (value) {
             var normalizedQuery = _this.normalizeQuery(value);
-            return Observable.from(_this.typeahead)
-                .filter(function (option) {
+            return from(_this.typeahead)
+                .pipe(filter(function (option) {
                 return (option &&
                     _this.testMatch(_this.normalizeOption(option), normalizedQuery));
-            })
-                .toArray();
-        })
+            }), toArray());
+        }))
             .subscribe(function (matches) {
             _this.finalizeAsyncCall(matches);
         }));
@@ -320,7 +314,9 @@ var TypeaheadDirective = (function () {
                 .filter(function (v, i, a) { return a.indexOf(v) === i; });
             groups.forEach(function (group) {
                 // add group header to array of matches
+                // add group header to array of matches
                 matches_1.push(new TypeaheadMatch(group, group, true));
+                // add each item of group to array of matches
                 // add each item of group to array of matches
                 matches_1 = matches_1.concat(limited
                     .filter(function (option) {
@@ -354,32 +350,32 @@ var TypeaheadDirective = (function () {
         { type: ChangeDetectorRef, },
     ]; };
     TypeaheadDirective.propDecorators = {
-        'typeahead': [{ type: Input },],
-        'typeaheadMinLength': [{ type: Input },],
-        'typeaheadWaitMs': [{ type: Input },],
-        'typeaheadOptionsLimit': [{ type: Input },],
-        'typeaheadOptionField': [{ type: Input },],
-        'typeaheadGroupField': [{ type: Input },],
-        'typeaheadAsync': [{ type: Input },],
-        'typeaheadLatinize': [{ type: Input },],
-        'typeaheadSingleWords': [{ type: Input },],
-        'typeaheadWordDelimiters': [{ type: Input },],
-        'typeaheadPhraseDelimiters': [{ type: Input },],
-        'typeaheadItemTemplate': [{ type: Input },],
-        'optionsListTemplate': [{ type: Input },],
-        'typeaheadScrollable': [{ type: Input },],
-        'typeaheadOptionsInScrollableView': [{ type: Input },],
-        'typeaheadLoading': [{ type: Output },],
-        'typeaheadNoResults': [{ type: Output },],
-        'typeaheadOnSelect': [{ type: Output },],
-        'typeaheadOnBlur': [{ type: Output },],
-        'container': [{ type: Input },],
-        'dropup': [{ type: Input },],
-        'onInput': [{ type: HostListener, args: ['input', ['$event'],] },],
-        'onChange': [{ type: HostListener, args: ['keyup', ['$event'],] },],
-        'onFocus': [{ type: HostListener, args: ['click',] }, { type: HostListener, args: ['focus',] },],
-        'onBlur': [{ type: HostListener, args: ['blur',] },],
-        'onKeydown': [{ type: HostListener, args: ['keydown', ['$event'],] },],
+        "typeahead": [{ type: Input },],
+        "typeaheadMinLength": [{ type: Input },],
+        "typeaheadWaitMs": [{ type: Input },],
+        "typeaheadOptionsLimit": [{ type: Input },],
+        "typeaheadOptionField": [{ type: Input },],
+        "typeaheadGroupField": [{ type: Input },],
+        "typeaheadAsync": [{ type: Input },],
+        "typeaheadLatinize": [{ type: Input },],
+        "typeaheadSingleWords": [{ type: Input },],
+        "typeaheadWordDelimiters": [{ type: Input },],
+        "typeaheadPhraseDelimiters": [{ type: Input },],
+        "typeaheadItemTemplate": [{ type: Input },],
+        "optionsListTemplate": [{ type: Input },],
+        "typeaheadScrollable": [{ type: Input },],
+        "typeaheadOptionsInScrollableView": [{ type: Input },],
+        "typeaheadLoading": [{ type: Output },],
+        "typeaheadNoResults": [{ type: Output },],
+        "typeaheadOnSelect": [{ type: Output },],
+        "typeaheadOnBlur": [{ type: Output },],
+        "container": [{ type: Input },],
+        "dropup": [{ type: Input },],
+        "onInput": [{ type: HostListener, args: ['input', ['$event'],] },],
+        "onChange": [{ type: HostListener, args: ['keyup', ['$event'],] },],
+        "onFocus": [{ type: HostListener, args: ['click',] }, { type: HostListener, args: ['focus',] },],
+        "onBlur": [{ type: HostListener, args: ['blur',] },],
+        "onKeydown": [{ type: HostListener, args: ['keydown', ['$event'],] },],
     };
     return TypeaheadDirective;
 }());

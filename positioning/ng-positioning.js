@@ -5,7 +5,11 @@
 // previous version:
 // https://github.com/angular-ui/bootstrap/blob/07c31d0731f7cb068a1932b8e01d2312b796b4ec/src/position/position.js
 // tslint:disable
-var Positioning = (function () {
+var 
+// previous version:
+// https://github.com/angular-ui/bootstrap/blob/07c31d0731f7cb068a1932b8e01d2312b796b4ec/src/position/position.js
+// tslint:disable
+Positioning = /** @class */ (function () {
     function Positioning() {
     }
     Positioning.prototype.position = function (element, round) {
@@ -81,20 +85,6 @@ var Positioning = (function () {
             ? this.offset(hostElement, false)
             : this.position(hostElement, false);
         var targetElStyles = this.getAllStyles(targetElement);
-        var shiftWidth = {
-            left: hostElPosition.left,
-            center: hostElPosition.left +
-                hostElPosition.width / 2 -
-                targetElement.offsetWidth / 2,
-            right: hostElPosition.left + hostElPosition.width
-        };
-        var shiftHeight = {
-            top: hostElPosition.top,
-            center: hostElPosition.top +
-                hostElPosition.height / 2 -
-                targetElement.offsetHeight / 2,
-            bottom: hostElPosition.top + hostElPosition.height
-        };
         var targetElBCR = targetElement.getBoundingClientRect();
         var placementPrimary = placement.split(' ')[0] || 'top';
         var placementSecondary = placement.split(' ')[1] || 'center';
@@ -105,6 +95,20 @@ var Positioning = (function () {
             bottom: targetElBCR.height || targetElement.offsetHeight,
             left: 0,
             right: targetElBCR.width || targetElement.offsetWidth
+        };
+        var shiftHeight = {
+            top: hostElPosition.top,
+            center: hostElPosition.top +
+                hostElPosition.height / 2 -
+                targetElPosition.height / 2,
+            bottom: hostElPosition.top + hostElPosition.height
+        };
+        var shiftWidth = {
+            left: hostElPosition.left,
+            center: hostElPosition.left +
+                hostElPosition.width / 2 -
+                targetElPosition.width / 2,
+            right: hostElPosition.left + hostElPosition.width
         };
         if (placementPrimary === 'auto') {
             var newPlacementPrimary = this.autoPosition(targetElPosition, hostElPosition, targetElement, placementSecondary);
@@ -118,10 +122,10 @@ var Positioning = (function () {
             case 'top':
                 targetElPosition.top =
                     hostElPosition.top -
-                        (targetElement.offsetHeight +
+                        (targetElPosition.height +
                             parseFloat(targetElStyles.marginBottom));
                 targetElPosition.bottom +=
-                    hostElPosition.top - targetElement.offsetHeight;
+                    hostElPosition.top - targetElPosition.height;
                 targetElPosition.left = shiftWidth[placementSecondary];
                 targetElPosition.right += shiftWidth[placementSecondary];
                 break;
@@ -136,9 +140,9 @@ var Positioning = (function () {
                 targetElPosition.bottom += shiftHeight[placementSecondary];
                 targetElPosition.left =
                     hostElPosition.left -
-                        (targetElement.offsetWidth + parseFloat(targetElStyles.marginRight));
+                        (targetElPosition.width + parseFloat(targetElStyles.marginRight));
                 targetElPosition.right +=
-                    hostElPosition.left - targetElement.offsetWidth;
+                    hostElPosition.left - targetElPosition.width;
                 break;
             case 'right':
                 targetElPosition.top = shiftHeight[placementSecondary];
@@ -155,25 +159,25 @@ var Positioning = (function () {
     };
     Positioning.prototype.autoPosition = function (targetElPosition, hostElPosition, targetElement, preferredPosition) {
         if ((!preferredPosition || preferredPosition === 'right') &&
-            targetElPosition.left + hostElPosition.left - targetElement.offsetWidth <
+            targetElPosition.left + hostElPosition.left - targetElPosition.width <
                 0) {
             return 'right';
         }
         else if ((!preferredPosition || preferredPosition === 'top') &&
             targetElPosition.bottom +
                 hostElPosition.bottom +
-                targetElement.offsetHeight >
+                targetElPosition.height >
                 window.innerHeight) {
             return 'top';
         }
         else if ((!preferredPosition || preferredPosition === 'bottom') &&
-            targetElPosition.top + hostElPosition.top - targetElement.offsetHeight < 0) {
+            targetElPosition.top + hostElPosition.top - targetElPosition.height < 0) {
             return 'bottom';
         }
         else if ((!preferredPosition || preferredPosition === 'left') &&
             targetElPosition.right +
                 hostElPosition.right +
-                targetElement.offsetWidth >
+                targetElPosition.width >
                 window.innerWidth) {
             return 'left';
         }
@@ -199,6 +203,9 @@ var Positioning = (function () {
     };
     return Positioning;
 }());
+// previous version:
+// https://github.com/angular-ui/bootstrap/blob/07c31d0731f7cb068a1932b8e01d2312b796b4ec/src/position/position.js
+// tslint:disable
 export { Positioning };
 var positionService = new Positioning();
 export function positionElements(hostElement, targetElement, placement, appendToBody) {

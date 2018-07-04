@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, ElementRef, Renderer2 } from '@angular/core';
-import { ControlValueAccessor } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, ValidationErrors, Validator } from '@angular/forms';
 import { BsDaterangepickerDirective } from './bs-daterangepicker.component';
 import { BsLocaleService } from './bs-locale.service';
-export declare class BsDaterangepickerInputDirective implements ControlValueAccessor {
+export declare class BsDaterangepickerInputDirective implements ControlValueAccessor, Validator {
     private _picker;
     private _localeService;
     private _renderer;
@@ -10,10 +10,13 @@ export declare class BsDaterangepickerInputDirective implements ControlValueAcce
     private changeDetection;
     private _onChange;
     private _onTouched;
+    private _validatorChange;
     private _value;
     constructor(_picker: BsDaterangepickerDirective, _localeService: BsLocaleService, _renderer: Renderer2, _elRef: ElementRef, changeDetection: ChangeDetectorRef);
     _setInputValue(date: Date[]): void;
     onChange(event: any): void;
+    validate(c: AbstractControl): ValidationErrors | null;
+    registerOnValidatorChange(fn: () => void): void;
     writeValue(value: Date[] | string): void;
     setDisabledState(isDisabled: boolean): void;
     registerOnChange(fn: (value: any) => any): void;

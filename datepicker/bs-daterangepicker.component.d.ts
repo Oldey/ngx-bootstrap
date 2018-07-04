@@ -1,9 +1,9 @@
 import { ElementRef, EventEmitter, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ViewContainerRef } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { BsDaterangepickerConfig } from './bs-daterangepicker.config';
+import { Subscription } from 'rxjs';
 import { ComponentLoaderFactory } from '../component-loader/component-loader.factory';
-import { BsDatepickerConfig } from './bs-datepicker.config';
 export declare class BsDaterangepickerDirective implements OnInit, OnDestroy, OnChanges {
-    _config: BsDatepickerConfig;
+    _config: BsDaterangepickerConfig;
     /**
      * Placement of a daterangepicker. Accepts: "top", "bottom", "left", "right"
      */
@@ -42,9 +42,9 @@ export declare class BsDaterangepickerDirective implements OnInit, OnDestroy, On
     /**
      * Config object for daterangepicker
      */
-    bsConfig: Partial<BsDatepickerConfig>;
+    bsConfig: Partial<BsDaterangepickerConfig>;
     /**
-     * Indicates whether daterangepicker is enabled or not
+     * Indicates whether daterangepicker's content is enabled or not
      */
     isDisabled: boolean;
     /**
@@ -62,7 +62,7 @@ export declare class BsDaterangepickerDirective implements OnInit, OnDestroy, On
     protected _subs: Subscription[];
     private _datepicker;
     private _datepickerRef;
-    constructor(_config: BsDatepickerConfig, _elementRef: ElementRef, _renderer: Renderer2, _viewContainerRef: ViewContainerRef, cis: ComponentLoaderFactory);
+    constructor(_config: BsDaterangepickerConfig, _elementRef: ElementRef, _renderer: Renderer2, _viewContainerRef: ViewContainerRef, cis: ComponentLoaderFactory);
     ngOnInit(): any;
     ngOnChanges(changes: SimpleChanges): void;
     /**

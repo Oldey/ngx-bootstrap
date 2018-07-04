@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
-import { ComponentLoaderFactory } from '../component-loader';
-import { PositioningService } from '../positioning';
+import { ComponentLoaderFactory } from '../component-loader/index';
+import { PositioningService } from '../positioning/index';
 import { BsDropdownContainerComponent } from './bs-dropdown-container.component';
 import { BsDropdownMenuDirective } from './bs-dropdown-menu.directive';
 import { BsDropdownToggleDirective } from './bs-dropdown-toggle.directive';
 import { BsDropdownConfig } from './bs-dropdown.config';
 import { BsDropdownDirective } from './bs-dropdown.directive';
 import { BsDropdownState } from './bs-dropdown.state';
-var BsDropdownModule = (function () {
+var BsDropdownModule = /** @class */ (function () {
     function BsDropdownModule() {
     }
     BsDropdownModule.forRoot = function (config) {
@@ -40,8 +40,6 @@ var BsDropdownModule = (function () {
                     entryComponents: [BsDropdownContainerComponent]
                 },] },
     ];
-    /** @nocollapse */
-    BsDropdownModule.ctorParameters = function () { return []; };
     return BsDropdownModule;
 }());
 export { BsDropdownModule };

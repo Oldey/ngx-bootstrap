@@ -1,4 +1,8 @@
-import { DatepickerRenderOptions, BsDatepickerViewMode } from './models/index';
+import { BsDatepickerViewMode, DatepickerRenderOptions } from './models/index';
+/**
+ * For date range picker there are `BsDaterangepickerConfig` which inherits all properties,
+ * except `displayMonths`, for range picker it default to `2`
+ */
 export declare class BsDatepickerConfig implements DatepickerRenderOptions {
     value?: Date | Date[];
     isDisabled?: boolean;
@@ -25,6 +29,9 @@ export declare class BsDatepickerConfig implements DatepickerRenderOptions {
     showWeekNumbers: boolean;
     dateInputFormat: string;
     rangeSeparator: string;
+    /**
+     * Date format for date range input field
+     */
     rangeInputFormat: string;
     monthTitle: string;
     yearTitle: string;

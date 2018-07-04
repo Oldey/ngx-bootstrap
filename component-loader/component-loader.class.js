@@ -1,11 +1,7 @@
-// tslint:disable:max-file-line-count
-// todo: add delay support
-// todo: merge events onShow, onShown, etc...
-// todo: add global positioning configuration?
 import { ElementRef, EventEmitter, ReflectiveInjector, TemplateRef } from '@angular/core';
 import { listenToTriggersV2, registerOutsideClick } from '../utils/triggers';
 import { ContentRef } from './content-ref.class';
-var ComponentLoader = (function () {
+var ComponentLoader = /** @class */ (function () {
     /**
      * Do not use this directly, it should be instanced via
      * `ComponentLoadFactory.attach`
@@ -46,7 +42,10 @@ var ComponentLoader = (function () {
         return this;
     };
     // todo: add behaviour: to target element, `body`, custom element
-    ComponentLoader.prototype.to = function (container) {
+    // todo: add behaviour: to target element, `body`, custom element
+    ComponentLoader.prototype.to = 
+    // todo: add behaviour: to target element, `body`, custom element
+    function (container) {
         this.container = container || this.container;
         return this;
     };
@@ -60,13 +59,16 @@ var ComponentLoader = (function () {
         return this;
     };
     // todo: appendChild to element or document.querySelector(this.container)
-    ComponentLoader.prototype.show = function (opts) {
+    // todo: appendChild to element or document.querySelector(this.container)
+    ComponentLoader.prototype.show = 
+    // todo: appendChild to element or document.querySelector(this.container)
+    function (opts) {
         if (opts === void 0) { opts = {}; }
         this._subscribePositioning();
         this._innerComponent = null;
         if (!this._componentRef) {
             this.onBeforeShow.emit();
-            this._contentRef = this._getContentRef(opts.content, opts.context);
+            this._contentRef = this._getContentRef(opts.content, opts.context, opts.initialState);
             var injector = ReflectiveInjector.resolveAndCreate(this._providers, this._injector);
             this._componentRef = this._componentFactory.create(injector, this._contentRef.nodes);
             this._applicationRef.attachView(this._componentRef.hostView);
@@ -225,7 +227,7 @@ var ComponentLoader = (function () {
         this._zoneSubscription.unsubscribe();
         this._zoneSubscription = null;
     };
-    ComponentLoader.prototype._getContentRef = function (content, context) {
+    ComponentLoader.prototype._getContentRef = function (content, context, initialState) {
         if (!content) {
             return new ContentRef([]);
         }
@@ -244,6 +246,7 @@ var ComponentLoader = (function () {
             var contentCmptFactory = this._componentFactoryResolver.resolveComponentFactory(content);
             var modalContentInjector = ReflectiveInjector.resolveAndCreate(this._providers.slice(), this._injector);
             var componentRef = contentCmptFactory.create(modalContentInjector);
+            Object.assign(componentRef.instance, initialState);
             this._applicationRef.attachView(componentRef.hostView);
             return new ContentRef([[componentRef.location.nativeElement]], componentRef.hostView, componentRef);
         }
